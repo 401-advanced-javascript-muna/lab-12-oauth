@@ -1,7 +1,7 @@
 'use strict';
 
 const superagent = require('superagent');
-const users = require('./users.js');
+const users = require('./user.js');
 
 const tokenServerUrl = 'https://github.com/login/oauth/access_token';
 const remoteAPI = 'https://api.github.com/user';
@@ -31,6 +31,7 @@ module.exports = async function authorize(req, res, next) {
     next();
   } catch(err) {
     next(err);
+
   }
 }
 
@@ -62,7 +63,7 @@ async function getUser(remoteUser) {
     password: 'oauthpassword'
   }
 
-  let user = await users.save(userRecord);          // s
+  let user = await users.save(userRecord);          
   let token = users.generateToken(user);
 
   return [user, token];

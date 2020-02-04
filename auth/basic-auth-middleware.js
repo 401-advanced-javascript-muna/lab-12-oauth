@@ -6,10 +6,10 @@ const users = require('./user');
 
 const jwt = require('jsonwebtoken');
 
-let SECRET = 'secret123';
+// let SECRET = 'secret123';
 
 function generateToken(user) {
-  let token = jwt.sign({ id: user._id  }, SECRET);
+  let token = jwt.sign({ id: user._id  },process.env.SECRET);
   // let token = jwt.sign({ username: user.username}, SECRET);
   //
   return token;

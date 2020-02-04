@@ -8,10 +8,11 @@
     <a id="oauth" href="#">Login to My App</a>
   </body>
   <script>
+    
     let URL = 'https://github.com/login/oauth/authorize';
 
     let options = {
-      client_id: '',
+      client_id: '4e7100c2fb4969cdc026',
       redirect_uri: 'http://localhost:3000/oauth',
       scope: 'read:user',   ///modify the response
       state: '401appconsent'
@@ -29,5 +30,6 @@
     
     let link = document.getElementById('oauth');
     link.setAttribute('href', authURL);
+    
   </script>
 </html>

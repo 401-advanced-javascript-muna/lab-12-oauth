@@ -2,9 +2,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const model=require('./user.model')
+const model=require('../models/model.js')
 
-let SECRET = "secret123" ;
+// let SECRET = "secret123" ;
 
 //  our schema 
 const users = new mongoose.Schema({
@@ -35,7 +35,7 @@ users.pre('save', async function() {
 
 //   Method to generate a Token following a valid login
   users.methods.generateToken = function(user) {
-    let token = jwt.sign({ id: this._id  }, SECRET);
+    let token = jwt.sign({ id: this._id  }, process.env.SECRET);
     // let token = jwt.sign({ username: user.username}, SECRET);
     return token;
   }
