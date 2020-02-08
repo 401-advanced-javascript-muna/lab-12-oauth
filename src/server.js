@@ -35,6 +35,7 @@ app.post('/signin', basicAuth, (req, res) => {
 });
 
 app.get('/oauth', oauth, (req, res) => {
+  console.log(req.query)
     res.status(200).send(req.token);
   });
 
