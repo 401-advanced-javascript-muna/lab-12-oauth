@@ -7,6 +7,7 @@ const users = require('./user');
 const jwt = require('jsonwebtoken');
 
 // let SECRET = 'secret123';
+// from demo code
 
 function generateToken(user) {
   let token = jwt.sign({ id: user._id  },process.env.SECRET);

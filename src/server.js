@@ -39,10 +39,14 @@ app.get('/oauth', oauth, (req, res) => {
     res.status(200).send(req.token);
   });
 
-// app.get('/users', basicAuth, (req, res) => {
-//   console.log('kkkkkkkk',(users.find()));
-//   res.status(200).json();
-// });
+app.get('/users', basicAuth, (req, res) => {
+
+  users.find()
+    .then(records =>{
+      res.status(200).send(records );
+    });
+ 
+});
 
 module.exports = {
   server: app,
