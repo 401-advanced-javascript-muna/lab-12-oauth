@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const superagent = require('superagent');
 const users = require('./user.js');
 const jwt = require('jsonwebtoken');
@@ -8,25 +8,73 @@ const jwt = require('jsonwebtoken');
 const tokenServerUrl = 'https://github.com/login/oauth/access_token';
 const remoteAPI = 'https://api.github.com/user';
 
-module.exports = async function authorize(req, res, next) {
+// module.exports = async function authorize(req, res, next) {
+//   try {
+
+//     // console.log('req.body' , req.body)
+//     let code = req.query.code;
+//     console.log('code:', code);
+//     let tokenFromGitHub = async function getTokenFromCode(code) {
+//       let tokenResponse = await superagent.post(tokenServerUrl).send({
+//         code: code,
+//         client_id: process.env.CLIENT_ID,
+//         client_secret: process.env.CLIENT_SECRET,
+//         redirect_uri:process.env.API_SERVER,
+//         grant_type: 'authorization_code'
+//       })
+//       let access_token = tokenResponse.body.access_token;
+//       return access_token;
+//     }
+//     console.log('retokenFromGitHub:       ', tokenFromGitHub);
+
+//     let userInfo = async function getUserInfo(token) {
+//       let userResponse = await superagent.get(remoteAPI)
+//         .set('user-agent', 'express-app')
+//         .set('Authorization', `token ${token}`)
+//       let user = userResponse.body;
+//       return user;
+//     }
+//     console.log('userInfo:          ', userInfo);
+//     let [user, token] = async function getUser(userInfo) {
+//       let userRecord = {
+//         username: userInfo.login,
+//         password: 'oauthpassword'
+//       }
+//       let user = new users(userRecord).save;
+//       // let token = generateToken(user);
+//       let token = jwt.sign({ id: user._id  }, process.env.SECRET);
+    
+//       console.log('//////////',user,token)
+//       return [user, token];
+//     }
+//     req.user = user;
+//     req.token = token;
+//     console.log('user', user);
+//     next();
+//   } catch(err) {
+//     next(err);
+//   }
+// }
+
+module.exports = async function oauth(req, res, next) {
   try {
     let code = req.query.code;
     // console.log('req.body' , req.body)
-    console.log('my code:', code);
-    let remoteToken = await exchangeCodeForToken(code);
-    console.log('remote token:', remoteToken);
-    let remoteUser = await getRemoteUserInfo(remoteToken);
-    console.log('remote user:', remoteUser);
-    let [user, token] = await getUser(remoteUser);
+    let getTokenFromGitHub = await tokenFromGitHub(code);
+    let userInfo = await getRemoteUserInfo(getTokenFromGitHub);
+    let [user, token] = await userAndToken(userInfo);
     req.user = user;
     req.token = token;
+    console.log('code:', code);
+    console.log('getTokenFromGitHub:', getTokenFromGitHub);
+    console.log('userInfo:', userInfo);
     console.log('user', user);
     next();
   } catch(err) {
     next(err);
   }
 }
-async function exchangeCodeForToken(code) {
+async function tokenFromGitHub(code) {
   let tokenResponse = await superagent.post(tokenServerUrl).send({
     code: code,
     client_id: process.env.CLIENT_ID,
@@ -44,60 +92,17 @@ async function getRemoteUserInfo(token) {
   let user = userResponse.body;
   return user;
 }
-async function getUser(remoteUser) {
+async function userAndToken(userInfo) {
   let userRecord = {
-    username: remoteUser.login,
+    username: userInfo.login,
     password: 'oauthpassword'
   }
-  let user = await users.save(userRecord);
-  let token = generateToken(user);
+  let user = new users(userRecord).save;
+  // let token = generateToken(user);
+  let token = jwt.sign({ id: user._id  }, process.env.SECRET);
+
+  console.log('/////////0000/',user,'2222222222222222222222222222222',token)
   return [user, token];
 }
 
 
-
-// module.exports = async function authorize(req, res, next) {
-//   try {
-//     let code = req.query.code;
-//     // console.log('req.body' , req.body)
-//     console.log('my code:', code);
-//     let remoteToken = await exchangeCodeForToken(code);
-//     console.log('remote token:', remoteToken);
-//     let remoteUser = await getRemoteUserInfo(remoteToken);
-//     console.log('remote user:', remoteUser);
-//     let [user, token] = await getUser(remoteUser);
-//     req.user = user;
-//     req.token = token;
-//     console.log('user', user);
-//     next();
-//   } catch(err) {
-//     next(err);
-//   }
-// }
-// async function exchangeCodeForToken(code) {
-//   let tokenResponse = await superagent.post(tokenServerUrl).send({
-//     code: code,
-//     client_id: process.env.CLIENT_ID,
-//     client_secret: process.env.CLIENT_SECRET,
-//     redirect_uri:process.env.API_SERVER,
-//     grant_type: 'authorization_code'
-//   })
-//   let access_token = tokenResponse.body.access_token;
-//   return access_token;
-// }
-// async function getRemoteUserInfo(token) {
-//   let userResponse = await superagent.get(remoteAPI)
-//     .set('user-agent', 'express-app')
-//     .set('Authorization', `token ${token}`)
-//   let user = userResponse.body;
-//   return user;
-// }
-// async function getUser(remoteUser) {
-//   let userRecord = {
-//     username: remoteUser.login,
-//     password: 'oauthpassword'
-//   }
-//   let user = await users.save(userRecord);
-//   let token = generateToken(user);
-//   return [user, token];
-// }
