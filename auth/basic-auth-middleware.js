@@ -1,4 +1,5 @@
-'use strict';
+/* eslint-disable no-unused-vars */
+
 
 const base64 = require('base-64');
 

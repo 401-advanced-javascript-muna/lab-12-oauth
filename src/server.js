@@ -1,5 +1,5 @@
-'use strict';
 
+'use strict ';
 
 const express = require('express');
 
@@ -22,10 +22,7 @@ app.use(express.static('./public'));
 
 app.post('/signup', (req, res) => {
   new users(req.body).save()
-  //   console.log(req.body,'req.bodyreq.bodyreq.bodyreq')
-  //  console.log('req.body 2' , req.body)
     .then((user) => {
-
       console.log('user-------',user);
       let token = user.generateToken();
       res.status(200).send(token);
@@ -47,10 +44,10 @@ app.get('/users', basicAuth, (req, res) => {
     .then(records =>{
       res.status(200).send(records );
     });
-  });
+});
 app.get('/secret', bearerAuth, (req, res) => {
-    console.log('req.user',req.user);
-    res.status(200).json(req.user);
+  console.log('req.user',req.user);
+  res.status(200).json(req.user);
 });
 
 
