@@ -7,7 +7,9 @@ const basicAuth =  require('../auth/basic-auth-middleware');
 
 const users = require('../auth/user');
 
-const oauth = require('../auth/oauth-middleware');
+const oauth = require('../auth/oauth-middleware.js');
+
+const bearerAuth = require('../auth/bearer-auth-middleware.js');
 
 const app = express();
 
@@ -35,9 +37,9 @@ app.post('/signin', basicAuth, (req, res) => {
 });
 
 app.get('/oauth', oauth, (req, res) => {
-  console.log(req.query)
-    res.status(200).send(req.token);
-  });
+  // console.log(req.query);
+  res.status(200).send(req.token);
+});
 
 app.get('/users', basicAuth, (req, res) => {
 
@@ -45,8 +47,15 @@ app.get('/users', basicAuth, (req, res) => {
     .then(records =>{
       res.status(200).send(records );
     });
- 
+  });
+app.get('/secret', bearerAuth, (req, res) => {
+    console.log('req.user',req.user);
+    res.status(200).json(req.user);
 });
+
+
+
+
 
 module.exports = {
   server: app,

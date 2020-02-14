@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
+require('dotenv').config();
+
 // let SECRET = "secret123" ;
 
 //  our schema 
@@ -37,6 +39,31 @@ users.pre('save', async function() {
     let token = jwt.sign({ id: this._id  }, process.env.SECRET);
     // let token = jwt.sign({ username: user.username}, SECRET);
     return token;
+  }
+
+  users.statics.bearerAuthenticateToken = async function(token) {
+    try {
+
+      let tokenObject = jwt.verify(token, process.env.SECRET);
+      console.log('tokenObject : ',tokenObject );
+
+      
+      let token = jwt.sign({ username: user.username}, process.env.SECRET, { expiresIn: 60 * 15});
+      
+      // return users.findOne({username:tokenObject.username});
+      //   console.log('hiiiii')
+      //   let tokenObject = jwt.verify(token, process.env.SECRET);
+      // console.log('tokenObject',tokenObject)
+      console.log(users,'user')
+      if (users.tokenObject.username) {
+        console.log(tokenObject,'tokenObject');
+        return users.findOne({username:tokenObject.username});
+      } else {
+        return Promise.reject();
+      }
+    } catch (err) {
+      return Promise.reject();
+    }
   }
 
   module.exports = mongoose.model('users', users);
