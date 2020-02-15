@@ -29,7 +29,7 @@ app.post('/signup', (req, res) => {
     }).catch(err => console.error(err));
 });
 
-app.post('/signin', basicAuth, (req, res) => {
+app.post('/signin', basicAuth,bearerAuth, (req, res) => {
   res.status(200).send(req.token);
 });
 
