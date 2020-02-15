@@ -29,7 +29,7 @@ app.post('/signup', (req, res) => {
     }).catch(err => console.error(err));
 });
 
-app.post('/signin', basicAuth, (req, res) => {
+app.post('/signin', basicAuth, bearerAuth, (req, res) => {
   res.status(200).send(req.token);
 });
 
@@ -46,7 +46,7 @@ app.get('/users', basicAuth, (req, res) => {
     });
 });
 app.get('/secret', bearerAuth, (req, res) => {
-  console.log('req.user',req.user);
+  // console.log('req.user',req.user);
   res.status(200).json(req.user);
 });
 

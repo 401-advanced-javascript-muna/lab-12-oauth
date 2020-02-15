@@ -12,9 +12,17 @@ require('dotenv').config();
 //  our schema 
 const users = new mongoose.Schema({
     username: { type: String, required: true ,unique: true},
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    role: {type: String, default:'user', enum: ['admin','editor','user']},
   
   });
+
+  const capabilities = {
+    admin: ['create','read','update','delete'],
+    editor: ['create', 'read', 'update'],
+    user: ['read'],
+  };
+
 
 //   Hash the plain text password given before you save a user to the database
 users.pre('save', async function() {
@@ -38,7 +46,13 @@ users.pre('save', async function() {
 
 //   Method to generate a Token following a valid login
   users.methods.generateToken = function(user) {
-    let token = jwt.sign({ id: this._id  }, process.env.SECRET);
+    let userData = {
+      id: this._id,
+      capabilities: roles[user.role]
+    }
+    let token = jwt.sign(userData, process.env.SECRET);
+
+    // let token = jwt.sign({ id: this._id  }, process.env.SECRET);
     // let token = jwt.sign({ username: user.username}, SECRET);
     return token;
   }
@@ -46,23 +60,14 @@ users.pre('save', async function() {
   users.statics.bearerAuthenticateToken = async function(token) {
     try {
 
-      let tokenObject = jwt.verify(token, process.env.SECRET);
-      console.log('tokenObject : ',tokenObject );
+      let tokenObject = await jwt.verify(token, process.env.SECRET);
+      console.log('token ',token)
+      console.log('tokenObjecttokenObject :- ',tokenObject );
+      // let idToken = {id: tokenObject._id };
+      // console.log('idTokenidTokenidToken',idToken)
+      return this.findOne({id:tokenObject._id});
 
       
-      let token = jwt.sign({ username: user.username}, process.env.SECRET, { expiresIn: 60 * 15});
-      
-      // return users.findOne({username:tokenObject.username});
-      //   console.log('hiiiii')
-      //   let tokenObject = jwt.verify(token, process.env.SECRET);
-      // console.log('tokenObject',tokenObject)
-      console.log(users,'user')
-      if (users.tokenObject.username) {
-        console.log(tokenObject,'tokenObject');
-        return users.findOne({username:tokenObject.username});
-      } else {
-        return Promise.reject();
-      }
     } catch (err) {
       return Promise.reject();
     }
