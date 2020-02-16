@@ -21,12 +21,12 @@ without test
 
 - .env file:
 
-PORT=3000
-MONGOOSE_URI=mongodb://localhost:27017/dbauth
-SECRET=sec123
-CLIENT_ID=
-CLIENT_SECRET=
-API_SERVER=
+- PORT=3000
+- MONGOOSE_URI=mongodb://localhost:27017/dbauth
+- SECRET=sec123
+- CLIENT_ID=
+- CLIENT_SECRET=
+- API_SERVER=
 
 #### UML
 
