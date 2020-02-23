@@ -17,6 +17,11 @@ function generateToken(user) {
   return token;
 }
 
+/**
+ * Basic Auth Middleware
+ */
+
+
 module.exports = (req, res, next) => {
   if(!req.headers.authorization) { next('invalid login'); return; }
 

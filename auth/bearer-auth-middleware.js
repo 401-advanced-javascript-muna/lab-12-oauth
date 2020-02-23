@@ -1,6 +1,9 @@
 'use stricts ';
 
 const users = require('./user.js');
+/**
+ * Bearer Auth Middleware
+ */
 
 module.exports = (req, res, next) => {
   let token;

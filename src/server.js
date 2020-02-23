@@ -2,55 +2,54 @@
 'use strict ';
 
 const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
 
-const basicAuth =  require('../auth/basic-auth-middleware');
 
-const users = require('../auth/user');
+// const basicAuth =  require('../auth/basic-auth-middleware');
 
-const oauth = require('../auth/oauth-middleware.js');
+// const users = require('../auth/user');
 
-const bearerAuth = require('../auth/bearer-auth-middleware.js');
+// const oauth = require('../auth/oauth-middleware.js');
+
+// const bearerAuth = require('../auth/bearer-auth-middleware.js');
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+app.use(morgan('dev'));
 
 app.use(express.static('./public'));
 
+const router = require('./routes.js');
 
-//**************Routes*******************
+const loqRequest = require('../middleware/logger.js');
 
-app.post('/signup', (req, res) => {
-  new users(req.body).save()
-    .then((user) => {
-      console.log('user-------',user);
-      let token = user.generateToken();
-      res.status(200).send(token);
-    }).catch(err => console.error(err));
-});
+const error404 = require('../middleware/err404.js');
 
-app.post('/signin', basicAuth, bearerAuth, (req, res) => {
-  res.status(200).send(req.token);
-});
+const error500 = require('../middleware/err500.js');
 
-app.get('/oauth', oauth, (req, res) => {
-  // console.log(req.query);
-  res.status(200).send(req.token);
-});
+const categoriesRoutes = require('../api-route/categories-routes.js');
 
-app.get('/users', basicAuth, (req, res) => {
+const ProductRoutes = require('../api-route/products-routes.js');
 
-  users.find()
-    .then(records =>{
-      res.status(200).send(records );
-    });
-});
-app.get('/secret', bearerAuth, (req, res) => {
-  // console.log('req.user',req.user);
-  res.status(200).json(req.user);
-});
+/**
+ * middleware
+ */
+app.use(loqRequest);
+
+// routes for api
+app.use('/api/v1', categoriesRoutes);
+app.use('/api/v1' , ProductRoutes);
+app.use(router);
 
 
+/**
+ * error handler
+ */
+app.use(error404);
+app.use(error500);
 
 
 
